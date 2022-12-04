@@ -16,6 +16,8 @@ fn to_numbers(s: &str) -> Result<Vec<u8>, ()> {
 fn main() {
   let stdin = io::stdin();
   let mut result : u32 = 0;
+  let mut result_second : u32 = 0;
+  let mut three_buffer : Vec<HashSet<u8>> = Vec::new();
   for line in stdin.lock().lines() {
     let linestr = line.unwrap().to_string();
     let half_one = to_numbers(&linestr[0..linestr.len() / 2]).unwrap();
@@ -25,6 +27,16 @@ fn main() {
     let common = one_set.intersection(&two_set);
     let common_v = common.collect::<Vec<_>>();
     result += **common_v.get(0).unwrap() as u32;
+    three_buffer.push(to_numbers(&linestr).unwrap().into_iter().collect());
+    if three_buffer.len() >= 3 {
+      let mut three_common = three_buffer.get(0).unwrap() 
+      & three_buffer.get(1).unwrap();
+      three_common = &three_common 
+      & three_buffer.get(2).unwrap();
+      result_second += *three_common.iter().next().unwrap() as u32;
+      three_buffer.clear();
+    }
   }
   println!("{}", result);
+  println!("{}", result_second);
 }
